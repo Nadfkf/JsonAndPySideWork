@@ -1,0 +1,72 @@
+import sys
+import random
+import json
+from PySide6.QtCore import Qt, Slot
+from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout,QLineEdit
+
+
+# главное окно приложения расширяет класс QWidget
+class MainWidget(QWidget):
+    # список предложений
+    strings = ["Перестань Щелкать", "Тестируй Это приложение!!!!!!",":D"]
+    def show_new_window(self):
+        self.w = AnotherWindow()
+        self.w.show()
+        self.w.resize(800, 600)
+        #self.hide()
+    # конструктор 
+    def __init__(self):
+        super().__init__()
+        
+        # создаем кнопку
+        self.button = QPushButton("Нажмите на меня!")
+        self.button3 = QPushButton("Нажмите чтобы начать тестировать!")
+        # создаем текстовую метку отцентиророванную посередине контейнера
+        self.text = QLabel("Привет,Это Приложение для теста возможностей Json файлов.", alignment=Qt.AlignCenter)
+     
+        # вертикальная разметка
+        self.layout = QVBoxLayout(self)
+        # добавляем виджеты в разметку
+        self.layout.addWidget(self.text)
+        self.layout.addWidget(self.button)
+        self.layout.addWidget(self.button3)
+        # назначаем обработчки для копки на событие клика
+        self.button.clicked.connect(self.randomSentence)
+        self.button3.clicked.connect(self.show_new_window)
+    # сам обработчик
+    @Slot()
+    def randomSentence(self):
+        self.text.setText(random.choice(self.strings))
+class AnotherWindow(QWidget):
+    def appendToJSON(self):
+        a = self.text2.text()
+        b = self.text3.text()
+        dictionary = {a:b}
+        with open('some_word.json', 'w') as write_file:
+            json.dump(dictionary, write_file)
+        self.lable3 = QLabel("Запись сохранена", alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.lable3)
+    def __init__(self):
+        super().__init__()
+        self.layout = QVBoxLayout(self)
+        self.lable = QLabel("Напишите какой то ключ", alignment=Qt.AlignCenter)
+        self.text2 = QLineEdit()
+        self.lable2 = QLabel("Напишите какое то значение", alignment=Qt.AlignCenter)
+        self.text3 = QLineEdit()
+        self.button2 = QPushButton("Нажмите чтобы ключ и значение сохранилось")
+        self.layout.addWidget(self.lable)
+        self.layout.addWidget(self.text2)
+        self.layout.addWidget(self.lable2)
+        self.layout.addWidget(self.text3)
+        self.layout.addWidget(self.button2)
+        self.button2.clicked.connect(self.appendToJSON)
+if __name__ == "__main__":
+    # главный класс приложения принимает строку - заголовок окна
+    app = QApplication(['Пример прииложения на PyQT'])
+
+    # создаем главный виджет размером 800x600 и отображаем его
+    widget = MainWidget()
+    widget.resize(800, 600)
+    widget.show()
+
+    sys.exit(app.exec())
